@@ -35,7 +35,23 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
-
+    // ---two-operation-for--update-operation
+    // ---1---first get data by spacific Id
+    app.get('/places/:_id', async (req, res) => {
+      const id = req.params._id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addPlace.findOne(query);
+      res.send(result)
+    })
+    // -----2------then put data for update
+  app.put('/places/:_id', async(req,res)=>{
+    const id= req.params._id;
+    const filter ={_id: new ObjectId(id)}
+    const option ={upsert:true}
+    const updateLocation = req.body;
+    
+  })
+    // ---------------------------
 
     app.post('/places', async (req, res) => {
       const newPlace = req.body;
@@ -47,7 +63,7 @@ async function run() {
 
     app.delete('/places/:_id', async (req, res) => {
       const id = req.params._id;
-      const query = { _id:new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await addPlace.deleteOne(query);
       res.send(result)
     })
