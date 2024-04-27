@@ -28,10 +28,10 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const addPlace = client.db('placesDB').collection('places')
+    const collectionOfLocation = client.db('placesDB').collection('places')
 
     app.get('/places', async (req, res) => {
-      const cursor = addPlace.find()
+      const cursor = collectionOfLocation.find()
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -40,22 +40,36 @@ async function run() {
     app.get('/places/:_id', async (req, res) => {
       const id = req.params._id;
       const query = { _id: new ObjectId(id) };
-      const result = await addPlace.findOne(query);
+      const result = await collectionOfLocation.findOne(query);
       res.send(result)
     })
     // -----2------then put data for update
-  app.put('/places/:_id', async(req,res)=>{
-    const id= req.params._id;
-    const filter ={_id: new ObjectId(id)}
-    const option ={upsert:true}
-    const updateLocation = req.body;
-    
-  })
+    app.put('/places/:_id', async (req, res) => {
+      const id = req.params._id;
+      const filter = { _id: new ObjectId(id) }
+      const option = { upsert: true }
+      const updateLocation = req.body;
+      const location = {
+        $set: {
+          image: updateLocation.name,
+          tourists_spot_name: updateLocation.tourists_spot_name,
+          country_Name: updateLocation.country_Name,
+          location: updateLocation.location,
+          description: updateLocation.description,
+          averageCost: updateLocation.averageCost,
+          seasonality: updateLocation.seasonality,
+          travel_Time: updateLocation.travel_Time,
+          total_Visitors_Per_Year: updateLocation.total_Visitors_Per_Year,
+        }
+      }
+      const result =await collectionOfLocation.updateOne(filter,location,option)
+res.send(result)
+    })
     // ---------------------------
 
     app.post('/places', async (req, res) => {
       const newPlace = req.body;
-      const result = await addPlace.insertOne(newPlace)
+      const result = await collectionOfLocation.insertOne(newPlace)
       console.log(newPlace)
       console.log(`A document was inserted with the _id: ${result.insertedId}`)
       res.send(result)
@@ -64,7 +78,7 @@ async function run() {
     app.delete('/places/:_id', async (req, res) => {
       const id = req.params._id;
       const query = { _id: new ObjectId(id) };
-      const result = await addPlace.deleteOne(query);
+      const result = await collectionOfLocation.deleteOne(query);
       res.send(result)
     })
 
