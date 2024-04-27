@@ -62,8 +62,8 @@ async function run() {
           total_Visitors_Per_Year: updateLocation.total_Visitors_Per_Year,
         }
       }
-      const result =await collectionOfLocation.updateOne(filter,location,option)
-res.send(result)
+      const result = await collectionOfLocation.updateOne(filter, location, option)
+      res.send(result)
     })
     // ---------------------------
 
