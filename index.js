@@ -75,23 +75,48 @@ async function run() {
       console.log(`A document was inserted with the _id: ${result.insertedId}`)
       res.send(result)
     })
-
-
-    // ------------for user
-    app.post('/user', async (req, res) => {
-      const newUser = req.body;
-      const result = await collectionOfUser.insertOne(newUser)
-      console.log(newPlace)
-      console.log(`A document was inserted with the _id: ${result.insertedId}`)
-      res.send(result)
-    })
-
     app.delete('/places/:_id', async (req, res) => {
       const id = req.params._id;
       const query = { _id: new ObjectId(id) };
       const result = await collectionOfLocation.deleteOne(query);
       res.send(result)
     })
+
+
+    // ------------for user
+
+    // -----------sign-Up
+    app.post('/user', async (req, res) => {
+      const newUser = req.body;
+      const result = await collectionOfUser.insertOne(newUser)
+      console.log(newUser)
+      console.log(`A document was inserted with the _id: ${result.insertedId}`)
+      res.send(result)
+    })
+    // ------?----sign_in
+    app.patch('/user', async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email }
+      const updateDoc = {
+          $set: {
+              lastLoggedAt: user.lastLoggedAt
+          }
+      }
+      const result = await collectionOfUser.updateOne(filter, updateDoc);
+      res.send(result);
+  })
+
+  // ---------------user
+  app.delete('/user/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await collectionOfUser.deleteOne(query);
+    res.send(result);
+})
+
+    // ------------------------------
+
+   
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
