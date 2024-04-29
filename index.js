@@ -29,6 +29,7 @@ async function run() {
     await client.connect();
 
     const collectionOfLocation = client.db('placesDB').collection('places')
+    const collectionOfUser = client.db('placesDB').collection('user')
 
     app.get('/places', async (req, res) => {
       const cursor = collectionOfLocation.find()
@@ -70,6 +71,16 @@ async function run() {
     app.post('/places', async (req, res) => {
       const newPlace = req.body;
       const result = await collectionOfLocation.insertOne(newPlace)
+      console.log(newPlace)
+      console.log(`A document was inserted with the _id: ${result.insertedId}`)
+      res.send(result)
+    })
+
+
+    // ------------for user
+    app.post('/user', async (req, res) => {
+      const newUser = req.body;
+      const result = await collectionOfUser.insertOne(newUser)
       console.log(newPlace)
       console.log(`A document was inserted with the _id: ${result.insertedId}`)
       res.send(result)
