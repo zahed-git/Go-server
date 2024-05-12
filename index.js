@@ -6,7 +6,14 @@ const app = express()
 const port = process.env.PORT || 5000;
 
 // ---middle ware
-app.use(cors())
+app.use(
+  cors({
+    origin:["http://localhost:5173",
+    "https://fire-base-64c1c.web.app",
+    "https://fire-base-64c1c.firebaseapp.com"],
+    credentials:true,
+  })
+  )
 app.use(express.json())
 
 // ---------from mongodb
@@ -26,7 +33,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const collectionOfLocation = client.db('placesDB').collection('places')
     const collectionOfUser = client.db('placesDB').collection('user')
@@ -52,7 +59,7 @@ async function run() {
       const updateLocation = req.body;
       const location = {
         $set: {
-          image: updateLocation.name,
+          image: updateLocation.image,
           tourists_spot_name: updateLocation.tourists_spot_name,
           country_Name: updateLocation.country_Name,
           location: updateLocation.location,
@@ -84,6 +91,12 @@ async function run() {
 
 
     // ------------for user
+    // ---user get
+    app.get('/user', async (req, res) => {
+      const cursor = collectionOfUser.find();
+      const users = await cursor.toArray();
+      res.send(users);
+  })
 
     // -----------sign-Up
     app.post('/user', async (req, res) => {
@@ -93,7 +106,8 @@ async function run() {
       console.log(`A document was inserted with the _id: ${result.insertedId}`)
       res.send(result)
     })
-    // ------?----sign_in
+
+    // ------?----sign_in and update--------
     app.patch('/user', async (req, res) => {
       const user = req.body;
       const filter = { email: user.email }
@@ -106,7 +120,7 @@ async function run() {
       res.send(result);
   })
 
-  // ---------------user
+  // ---------------user delet
   app.delete('/user/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectId(id) };
@@ -119,8 +133,8 @@ async function run() {
    
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -136,5 +150,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`"server is run runiong on port",${port}`)
+  console.log(`"server is run runing on port",${port}`)
 })
